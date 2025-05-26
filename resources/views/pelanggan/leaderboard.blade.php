@@ -3,31 +3,10 @@
 @section('content')
     <div class="container mx-auto px-4 py-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Left Column - Leaderboard for ranks 4+ (horizontal bars) -->
-            <div class="lg:w-1/2 bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl">
-                <h2
-                    class="text-xl font-bold mb-2 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 animate-pulse">
-                    🏆 Leaderboard Pembelian (Rank 4+)
-                </h2>
-                @if (isset($userRank))
-                    <p class="text-center text-sm text-gray-700 mb-4">
-                        Anda berada pada urutan <span class="font-semibold text-yellow-600">{{ $userRank }}</span>,
-                        lakukan pembelian untuk terus meningkatkan urutan anda.
-                    </p>
-                @endif
 
-                <!-- Scrollable container for the chart -->
-                <div class="relative" style="height: 1000px; overflow-y: auto;">
-                    <div style="height: {{ count($generalChartData) * 40 }}px; min-height: 100%;">
-                        <!-- Dynamic height based on data -->
-                        <canvas id="generalLeaderboardChart"></canvas>
-                    </div>
-                </div>
-            </div>
 
             <!-- Right Column - Top 3 Section (unchanged) -->
-            <div class="lg:w-1/2 flex flex-col gap-8">
-                <!-- Top Section - Top 3 with rewards -->
+            <div class="lg:w-1/2 flex flex-col gap-8" style="min-height: 1000px;">
                 <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl">
                     <h2 class="text-xl font-bold mb-6 text-center text-blue-700">🥇 Top 3 Pelanggan 🎁</h2>
 
@@ -122,6 +101,28 @@
                     </h2>
                     <div class="relative h-[300px]">
                         <canvas id="top3Chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- Left Column - Leaderboard for ranks 4+ (horizontal bars) -->
+            <div class="lg:w-1/2 bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl"
+                style="min-height: 1000px;">
+                <h2
+                    class="text-xl font-bold mb-2 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 animate-pulse">
+                    🏆 Leaderboard Pembelian (Rank 4+)
+                </h2>
+                @if (isset($userRank))
+                    <p class="text-center text-sm text-gray-700 mb-4">
+                        Anda berada pada urutan <span class="font-semibold text-yellow-600">{{ $userRank }}</span>,
+                        lakukan pembelian untuk terus meningkatkan urutan anda.
+                    </p>
+                @endif
+
+                <!-- Scrollable container for the chart -->
+                <div class="relative" style="height: 1000px; overflow-y: auto;">
+                    <div style="height: {{ count($generalChartData) * 40 }}px; min-height: 100%;">
+                        <!-- Dynamic height based on data -->
+                        <canvas id="generalLeaderboardChart"></canvas>
                     </div>
                 </div>
             </div>
