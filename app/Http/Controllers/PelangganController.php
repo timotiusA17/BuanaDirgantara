@@ -83,7 +83,8 @@ class PelangganController extends Controller
     public function home()
     {
         $produks = Produk::all();
-        $barangs = Barang::all();
+        $barangs = Barang::orderBy('gambar')->get();
+        // dd($barangs[0]['gambar']);
         return view('home', compact('produks', 'barangs'));
     }
 
