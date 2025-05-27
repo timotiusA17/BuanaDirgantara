@@ -50,7 +50,7 @@
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm promo-card">
                         @if ($promo->gambar)
-                            <img src="{{ asset('storage/' . $promo->gambar) }}" alt="Promo Image"
+                            <img src="{{$promo->gambar}}" alt="Promo Image"
                                 class="card-img-top promo-image bg-white"
                                 style="height: 200px; width: 100%; object-fit: contain; border-bottom: 1px solid #ddd;">
                         @endif
