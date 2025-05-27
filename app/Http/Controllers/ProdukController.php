@@ -28,7 +28,6 @@ class ProdukController extends Controller
         ]);
 
 
-
         if ($request->hasFile('gambar')) {
             $path = 'katalog';
             $file_extension = $request->file('gambar')->getClientOriginalName();
@@ -98,10 +97,38 @@ class ProdukController extends Controller
         $produk->HJUALB = $request->harga;
         $produk->SATUANB = $request->satuan;
         if ($request->hasFile('gambar')) {
-            $file = $request->file('gambar');
-            $path = $file->store('produk', 'public');
+            // $file = $request->file('gambar');
+            $path = 'promo';
             $produk->gambar = $path;
+            $file_extension = $request->file('gambar')->getClientOriginalName();
+            $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
+            $publicId = date('Y-m-d_His') . '_' . $fileName;
+
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+                'url' => [
+                    'secure' => true
+                ]
+            ]);
+
+            try {
+                $uploadedFile = $cloudinary->uploadApi()->upload(
+                    $request->file('gambar')->getRealPath(),
+                    [
+                        'folder' => $path,
+                        'public_id' => $publicId,
+                    ]
+                );
+            } catch (\Exception $e) {
+                Log::error('Cloudinary upload error: ' . $e->getMessage());
+                return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
+            }
         }
+        $produk->gambar = $uploadedFile['secure_url'];
         $produk->save();
 
         return redirect()->back()->with('success', 'Produk berhasil diperbarui.');
