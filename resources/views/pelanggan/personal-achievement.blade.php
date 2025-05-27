@@ -302,7 +302,7 @@
             </div>
 
             <div class="container mx-auto px-4 relative">
-                <h2 class="text-4xl font-extrabold text-center mb-8 gradient-text neon-text floating">🎯 Pencapaian Pembelian
+                <h2 class="text-4xl font-extrabold text-center mb-8 neon-text floating">🎯 Pencapaian Pembelian
                     Anda</h2>
 
                 @php
