@@ -24,7 +24,7 @@
             @foreach ($barangs as $produk)
                 <div class="product-card bg-white border border-black rounded-lg shadow p-3 flex flex-col items-center text-center"
                     data-name="{{ strtolower($produk->NAMAB) }}">
-                    <img src="{{ asset('storage/' . $produk->gambar) }}" class="w-full h-32 object-contain mb-3"
+                    <img src="{{$produk->gambar}}" class="w-full h-32 object-contain mb-3"
                         alt="{{ $produk->NAMAB }}">
                     <h4 class="text-md font-semibold text-gray-800">{{ $produk->NAMAB }}</h4>
                     <p class="text-gray-600 text-sm">Rp{{ number_format($produk->HJUALB, 0, ',', '.') }} /

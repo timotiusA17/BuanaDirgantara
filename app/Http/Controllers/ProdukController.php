@@ -6,6 +6,8 @@ use App\Models\Barang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Produk;
+use Cloudinary\Cloudinary;
+use Illuminate\Support\Facades\Log;
 
 class ProdukController extends Controller
 {
@@ -25,16 +27,42 @@ class ProdukController extends Controller
             'gambar' => 'nullable|image|max:2048',
         ]);
 
-        $path = null;
+        $cloudinary = new Cloudinary([
+            'cloud' => [
+                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                'api_key'    => env('CLOUDINARY_API_KEY'),
+                'api_secret' => env('CLOUDINARY_API_SECRET'),
+            ],
+            'url' => [
+                'secure' => true
+            ]
+        ]);
+
         if ($request->hasFile('gambar')) {
-            $path = $request->file('gambar')->store('produk', 'public');
+            $path = 'katalog';
+            $file_extension = $request->file('gambar')->getClientOriginalName();
+            $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
+            $publicId = date('Y-m-d_His') . '_' . $fileName;
+
+            try {
+                $uploadedFile = $cloudinary->uploadApi()->upload(
+                    $request->file('gambar')->getRealPath(),
+                    [
+                        'folder' => $path,
+                        'public_id' => $publicId,
+                    ]
+                );
+            } catch (\Exception $e) {
+                Log::error('Cloudinary upload error: ' . $e->getMessage());
+                return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
+            }
         }
 
         Produk::create([
             'nama' => $request->nama,
             'harga' => $request->harga,
             'satuan' => $request->satuan,
-            'gambar' => $path,
+            'gambar' => $uploadedFile['secure_url'], // atau 'url' jika tidak pakai SSL
         ]);
 
         return redirect()->route('admin.katalog')->with('success', 'Produk berhasil ditambahkan.');

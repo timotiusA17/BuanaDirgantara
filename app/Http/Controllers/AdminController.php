@@ -114,9 +114,6 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Akun ' . $request->role . ' berhasil dibuat.');
     }
 
-
-
-
     public function deleteUser($id)
     {
         $user = User::findOrFail($id);
