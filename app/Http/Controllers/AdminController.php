@@ -291,7 +291,7 @@ class AdminController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'diskon' => $request->diskon,
-            'gambar' => $uploadedFile,
+            'gambar' => $uploadedFile['secure_url'], // atau 'url' jika tidak pakai SSL
         ]);
 
         return redirect()->route('admin.promo')->with('success', 'Promo berhasil ditambahkan.');
