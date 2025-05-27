@@ -27,22 +27,24 @@ class ProdukController extends Controller
             'gambar' => 'nullable|image|max:2048',
         ]);
 
-        $cloudinary = new Cloudinary([
-            'cloud' => [
-                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                'api_key'    => env('CLOUDINARY_API_KEY'),
-                'api_secret' => env('CLOUDINARY_API_SECRET'),
-            ],
-            'url' => [
-                'secure' => true
-            ]
-        ]);
+
 
         if ($request->hasFile('gambar')) {
             $path = 'katalog';
             $file_extension = $request->file('gambar')->getClientOriginalName();
             $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
             $publicId = date('Y-m-d_His') . '_' . $fileName;
+
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+                'url' => [
+                    'secure' => true
+                ]
+            ]);
 
             try {
                 $uploadedFile = $cloudinary->uploadApi()->upload(
