@@ -10,7 +10,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Promo;
-
+use Cloudinary\Cloudinary;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -251,9 +252,38 @@ class AdminController extends Controller
             'gambar' => 'nullable|image|max:2048',
         ]);
 
-        $path = $request->hasFile('gambar')
-            ? $request->file('gambar')->store('promo', 'public')
-            : null;
+        // $path = $request->hasFile('gambar')
+        //     ? $request->file('gambar')->store('promo', 'public')
+        //     : null;
+
+        $path = 'promo';
+        $file_extension = $request->file('gambar')->getClientOriginalName();
+        $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
+        $publicId = date('Y-m-d_His') . '_' . $fileName;
+
+        $cloudinary = new Cloudinary([
+            'cloud' => [
+                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                'api_key'    => env('CLOUDINARY_API_KEY'),
+                'api_secret' => env('CLOUDINARY_API_SECRET'),
+            ],
+            'url' => [
+                'secure' => true
+            ]
+        ]);
+
+        try {
+            $uploadedFile = $cloudinary->uploadApi()->upload(
+                $request->file('gambar')->getRealPath(),
+                [
+                    'folder' => $path,
+                    'public_id' => $publicId,
+                ]
+            );
+        } catch (\Exception $e) {
+            Log::error('Cloudinary upload error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
+        }
 
         Promo::create([
             'nama' => $request->nama,
@@ -261,7 +291,7 @@ class AdminController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'diskon' => $request->diskon,
-            'gambar' => $path,
+            'gambar' => $uploadedFile,
         ]);
 
         return redirect()->route('admin.promo')->with('success', 'Promo berhasil ditambahkan.');
