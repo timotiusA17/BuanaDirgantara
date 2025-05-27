@@ -1,4 +1,4 @@
-<nav class="bg-black p-4 text-white">
+<nav class="bg-black p-4 text-white relative z-50">
     <div class="container mx-auto flex items-center justify-between">
         <!-- Left: Logo/Brand -->
         <div class="flex items-center flex-shrink-0">
