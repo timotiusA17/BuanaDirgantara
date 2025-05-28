@@ -149,7 +149,7 @@ class PelangganController extends Controller
         $gambar_hadiah = $pelanggan->gambar_hadiah;
             // ? Storage::url($pelanggan->gambar_hadiah)
             // : null
-
+        
         $target_aktif = $totalPembelian < $target1 ? $target1 : $target2;
         $progress = $target_aktif > 0 ? ($totalPembelian / $target_aktif) * 100 : 0;
         $progress = min(100, round($progress, 1));
@@ -186,7 +186,8 @@ class PelangganController extends Controller
             'deskripsi_hadiah',
             'gambar_hadiah',
             'chartData',
-            'bulanLabels'
+            'bulanLabels',
+            'pelanggan'
         ));
     }
 
