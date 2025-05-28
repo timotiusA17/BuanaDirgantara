@@ -86,7 +86,7 @@
                             <h3
                                 class="text-md font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
                                 🎁 Reward untuk Juara 1</h3>
-                            <img src="{{ asset('storage/' . $rewardImage) }}"
+                            <img src="{{ $rewardImage->reward_image }}"
                                 class="w-48 mx-auto rounded-lg shadow-lg border-2 border-yellow-400 transform hover:scale-110 transition-transform duration-300 hover:shadow-xl hover:border-yellow-500"
                                 alt="Reward Image">
                         </div>

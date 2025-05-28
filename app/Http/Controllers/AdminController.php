@@ -167,11 +167,38 @@ class AdminController extends Controller
             'reward_image' => 'required|image|max:2048'
         ]);
 
-        $path = $request->file('reward_image')->store('reward', 'public');
+        $path = 'reward';
+        $file_extension = $request->file('reward_image')->getClientOriginalName();
+        $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
+        $publicId = date('Y-m-d_His') . '_' . $fileName;
+
+        $cloudinary = new Cloudinary([
+            'cloud' => [
+                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                'api_key'    => env('CLOUDINARY_API_KEY'),
+                'api_secret' => env('CLOUDINARY_API_SECRET'),
+            ],
+            'url' => [
+                'secure' => true
+            ]
+        ]);
+
+        try {
+            $uploadedFile = $cloudinary->uploadApi()->upload(
+                $request->file('reward_image')->getRealPath(),
+                [
+                    'folder' => $path,
+                    'public_id' => $publicId,
+                ]
+            );
+        } catch (\Exception $e) {
+            Log::error('Cloudinary upload error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
+        }
 
         // Simpan hanya satu gambar (misalnya pada pelanggan dengan id 1 sebagai "dummy")
         Pelanggan::where('id', 1)->update([
-            'reward_image' => $path
+            'reward_image' => $uploadedFile['secure_url']
         ]);
 
         return redirect()->back()->with('success', 'Gambar reward berhasil diperbarui.');
