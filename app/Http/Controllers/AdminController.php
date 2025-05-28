@@ -242,12 +242,39 @@ class AdminController extends Controller
 
         // Tangani upload gambar baru
         if ($request->hasFile('gambar_hadiah')) {
-            if ($pelanggan->gambar_hadiah && Storage::disk('public')->exists($pelanggan->gambar_hadiah)) {
-                Storage::disk('public')->delete($pelanggan->gambar_hadiah); // Hapus gambar lama
+            // if ($pelanggan->gambar_hadiah && Storage::disk('public')->exists($pelanggan->gambar_hadiah)) {
+            //     Storage::disk('public')->delete($pelanggan->gambar_hadiah); // Hapus gambar lama
+            $path = 'target';
+            $file_extension = $request->file('gambar_hadiah')->getClientOriginalName();
+            $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
+            $publicId = date('Y-m-d_His') . '_' . $fileName;
+
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+                'url' => [
+                    'secure' => true
+                ]
+            ]);
+
+            try {
+                $uploadedFile = $cloudinary->uploadApi()->upload(
+                    $request->file('gambar_hadiah')->getRealPath(),
+                    [
+                        'folder' => $path,
+                        'public_id' => $publicId,
+                    ]
+                );
+            } catch (\Exception $e) {
+                Log::error('Cloudinary upload error: ' . $e->getMessage());
+                return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
             }
 
             $path = $request->file('gambar_hadiah')->store('gambar_hadiah', 'public');
-            $pelanggan->gambar_hadiah = $path;
+            $pelanggan->gambar_hadiah = $uploadedFile['secure_url'];
             $updated = true; // karena file diubah
         }
 

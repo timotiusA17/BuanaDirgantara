@@ -432,9 +432,9 @@
                         @endif
                     </div>
                     @if ($gambar_hadiah)
-                        <img src="{{ asset($gambar_hadiah) }}" alt="Hadiah" class="reward-image floating">
+                        <img src="{{ $gambar_hadiah->gambar_hadiah }}" alt="Hadiah" class="reward-image floating">
                     @else
-                        <img src="{{ asset('images/reward.png') }}" alt="Hadiah" class="reward-image floating">
+                        <img src="{{$gambar_hadiah->gambar_hadiah }}" alt="Hadiah" class="reward-image floating">
                     @endif
                 </div>
 

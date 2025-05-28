@@ -146,9 +146,9 @@ class PelangganController extends Controller
         $deskripsi_hadiah = $pelanggan->deskripsi_hadiah;
 
         // JANGAN tambahkan lagi "gambar_hadiah/" karena sudah disimpan lengkap
-        $gambar_hadiah = $pelanggan->gambar_hadiah
-            ? Storage::url($pelanggan->gambar_hadiah)
-            : null;
+        $gambar_hadiah = $pelanggan->gambar_hadiah;
+            // ? Storage::url($pelanggan->gambar_hadiah)
+            // : null
 
         $target_aktif = $totalPembelian < $target1 ? $target1 : $target2;
         $progress = $target_aktif > 0 ? ($totalPembelian / $target_aktif) * 100 : 0;
