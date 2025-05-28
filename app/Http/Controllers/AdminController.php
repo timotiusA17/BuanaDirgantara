@@ -367,12 +367,40 @@ class AdminController extends Controller
         $promo->diskon = $request->diskon;
 
         if ($request->hasFile('gambar')) {
-            if ($promo->gambar && Storage::disk('public')->exists($promo->gambar)) {
-                Storage::disk('public')->delete($promo->gambar);
+            // if ($promo->gambar && Storage::disk('public')->exists($promo->gambar)) {
+            //     Storage::disk('public')->delete($promo->gambar);
+            $path = 'promo';
+            $file_extension = $request->file('gambar')->getClientOriginalName();
+            $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
+            $publicId = date('Y-m-d_His') . '_' . $fileName;
+
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+                'url' => [
+                    'secure' => true
+                ]
+            ]);
+
+            try {
+                $uploadedFile = $cloudinary->uploadApi()->upload(
+                    $request->file('gambar')->getRealPath(),
+                    [
+                        'folder' => $path,
+                        'public_id' => $publicId,
+                    ]
+                );
+            } catch (\Exception $e) {
+                Log::error('Cloudinary upload error: ' . $e->getMessage());
+                return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
             }
 
-            $path = $request->file('gambar')->store('promo', 'public');
-            $promo->gambar = $path;
+
+            // $path = $request->file('gambar')->store('promo', 'public');
+            $promo->gambar = $$uploadedFile['secure_url'];
         }
 
         $promo->save();
