@@ -191,7 +191,6 @@ class PelangganController extends Controller
         ));
     }
 
-
     public function promoPage()
     {
         $promos = Promo::latest()->get();

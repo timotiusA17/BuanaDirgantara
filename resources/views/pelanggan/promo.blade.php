@@ -11,7 +11,7 @@
             @foreach ($promos as $promo)
                 <div class="border border-black-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition duration-300 bg-white">
                     @if ($promo->gambar)
-                        <img src="{{ asset('storage/' . $promo->gambar) }}" alt="Promo Image"
+                        <img src="{{ $promo->gambar }}" alt="Promo Image"
                              class="w-full h-40 object-cover border-b">
                     @endif
                     <div class="p-4">
