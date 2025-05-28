@@ -400,7 +400,7 @@ class AdminController extends Controller
 
 
             // $path = $request->file('gambar')->store('promo', 'public');
-            $promo->gambar = $$uploadedFile['secure_url'];
+            $promo->gambar = $uploadedFile['secure_url'];
         }
 
         $promo->save();
