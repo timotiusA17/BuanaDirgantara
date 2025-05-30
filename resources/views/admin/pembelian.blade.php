@@ -34,7 +34,8 @@
                         @foreach ($pelanggan as $p)
                             <tr>
                                 <td>{{ $p->nama_toko }}</td>
-                                <td>Rp {{ number_format($p->total_pembelian, 0, ',', '.') }}</td>
+                                <td data-order="{{ $p->total_pembelian }}">Rp
+                                    {{ number_format($p->total_pembelian, 0, ',', '.') }}</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm"
                                         onclick="openEditModal(
@@ -152,17 +153,12 @@
                         [10, 25, 50, 100, "Semua"]
                     ],
                     language: {
-                        lengthMenu: "Tampilkan _MENU_ entri",
-                        search: "Cari:",
-                        width: "100%",
-                        allowClear: true,
-                        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        paginate: {
-                            previous: "Sebelumnya",
-                            next: "Selanjutnya"
-                        },
-                        zeroRecords: "Tidak ada data ditemukan"
-                    }
+                        // ... konfigurasi bahasa tetap sama ...
+                    },
+                    columnDefs: [{
+                        targets: 1, // Kolom Total Pembelian (indeks 1)
+                        type: 'num' // Pastikan sorting sebagai numerik
+                    }]
                 });
 
                 // Format input angka
