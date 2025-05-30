@@ -98,7 +98,7 @@
                             <td>
                                 <div class="gambar-container">
                                     <span class="gambar-nama">{{ basename($produk->gambar) }}</span>
-                                    <a href="{{ asset('storage/' . $produk->gambar) }}" target="_blank"
+                                    <a href="{{ $produk->gambar }}" target="_blank"
                                         class="btn btn-sm btn-info">Lihat</a>
                                 </div>
                             </td>
