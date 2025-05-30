@@ -46,7 +46,7 @@
                             {{ $p->target2 ?? 'null' }},
                             `{{ $p->deskripsi_hadiah_target2 ?? '' }}`,  // Perhatikan backticks
                             `{{ $p->deskripsi_hadiah ?? '' }}`,
-                            `{{ $p->gambar_hadiah ? asset('storage/' . $p->gambar_hadiah) : '' }}`)">Edit
+                            `{{ $p->gambar_hadiah ? $p->gambar_hadiah : '' }}`)">Edit
                                     </button>
                                 </td>
                             </tr>
