@@ -152,9 +152,13 @@
                     return;
                 }
 
+                // Ambil nama toko dari baris tabel
+                const row = button.closest('tr');
+                const namaToko = row.querySelector('td:first-child').innerText.trim();
+
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
-                    text: "Data pembelian akan ditambahkan.",
+                    html: `Apakah yakin ingin menambahkan sebesar <strong>Rp ${jumlahValue}</strong> ke toko <strong>${namaToko}</strong>?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, tambah!',
@@ -163,8 +167,7 @@
                     if (result.isConfirmed) {
                         form.submit();
 
-                        // Opsional: Tampilkan notifikasi setelah submit berhasil
-                        // Catatan: Ini hanya terlihat jika form tidak redirect langsung
+                        // Optional success message (will not be seen if redirected)
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',

@@ -135,74 +135,85 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Hindari re-inisialisasi jika sudah ada
-                if ($.fn.DataTable.isDataTable('#customerTable')) {
-                    $('#customerTable').DataTable().clear().destroy();
-                }
+                        // Hindari re-inisialisasi jika sudah ada
+                        if ($.fn.DataTable.isDataTable('#customerTable')) {
+                            $('#customerTable').DataTable().clear().destroy();
+                        }
 
-                // Inisialisasi DataTable dengan semua fitur lengkap
-                $('#customerTable').DataTable({
-                    paging: true,
-                    lengthChange: true,
-                    pageLength: 10,
-                    ordering: true,
-                    searching: true,
-                    info: true,
-                    lengthMenu: [
-                        [10, 25, 50, 100, -1],
-                        [10, 25, 50, 100, "Semua"]
-                    ],
-                    language: {
-                        // ... konfigurasi bahasa tetap sama ...
-                    },
-                    columnDefs: [{
-                        targets: 1, // Kolom Total Pembelian (indeks 1)
-                        type: 'num' // Pastikan sorting sebagai numerik
-                    }]
-                });
+                        // Inisialisasi DataTable dengan semua fitur lengkap
+                        $('#customerTable').DataTable({
+                                paging: true,
+                                lengthChange: true,
+                                pageLength: 10,
+                                ordering: true,
+                                searching: true,
+                                info: true,
+                                lengthMenu: [
+                                    [10, 25, 50, 100, -1],
+                                    [10, 25, 50, 100, "Semua"]
+                                ],
+                                language: {
+                                    lengthMenu: "Tampilkan _MENU_ entri",
+                                    search: "Cari:",
+                                    width: "100%",
+                                    allowClear: true,
+                                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                                    paginate: {
+                                        previous: "Sebelumnya",
+                                        next: "Selanjutnya"
+                                    },
+                                    zeroRecords: "Tidak ada data ditemukan"
+                                },
+                                columnDefs: [{
+                                        targets: 1, 
+                                        type: 'num' 
+                                    }]
+                                });
 
-                // Format input angka
-                formatNumberInput(document.getElementById('target1'));
-                formatNumberInput(document.getElementById('target2'));
-                formatNumberInput(document.getElementById('totalPembelian'));
-            });
+                            // Format input angka
+                            formatNumberInput(document.getElementById('target1')); formatNumberInput(document
+                                .getElementById('target2')); formatNumberInput(document.getElementById('totalPembelian'));
+                        });
 
-            function formatNumberInput(input) {
-                input.addEventListener('input', function() {
-                    let value = this.value.replace(/\D/g, '');
-                    this.value = new Intl.NumberFormat('id-ID').format(value);
-                });
-            }
+                    function formatNumberInput(input) {
+                        input.addEventListener('input', function() {
+                            let value = this.value.replace(/\D/g, '');
+                            this.value = new Intl.NumberFormat('id-ID').format(value);
+                        });
+                    }
 
-            function openEditModal(id, nama, pembelian, target1, deskripsi_hadiah_target1, target2, deskripsi_hadiah_target2,
-                deskripsi_hadiah, gambarUrl) {
-                console.log('Gambar URL:', gambarUrl); // Debugging
-                document.getElementById('editModal').classList.remove('d-none');
-                document.getElementById('pelangganId').value = id;
-                document.getElementById('namaToko').value = nama;
-                document.getElementById('totalPembelian').value = new Intl.NumberFormat('id-ID').format(pembelian);
-                document.getElementById('target1').value = target1 ? new Intl.NumberFormat('id-ID').format(target1) : '';
-                document.getElementById('deskripsiHadiahTarget1').value = deskripsi_hadiah_target1 ?? '';
-                document.getElementById('target2').value = target2 ? new Intl.NumberFormat('id-ID').format(target2) : '';
-                document.getElementById('deskripsiHadiahTarget2').value = deskripsi_hadiah_target2 ?? '';
-                document.getElementById('deskripsiHadiah').value = deskripsi_hadiah ?? '';
-                // document.getElementById('previewGambar').innerHTML = gambarUrl ?
-                //     `<p class="mt-2 text-muted">Gambar Saat Ini:</p><img src="${gambarUrl}" alt="Gambar Hadiah" style="width: 100px;">` :
-                //     '';
+                    function openEditModal(id, nama, pembelian, target1, deskripsi_hadiah_target1, target2,
+                        deskripsi_hadiah_target2,
+                        deskripsi_hadiah, gambarUrl) {
+                        console.log('Gambar URL:', gambarUrl); // Debugging
+                        document.getElementById('editModal').classList.remove('d-none');
+                        document.getElementById('pelangganId').value = id;
+                        document.getElementById('namaToko').value = nama;
+                        document.getElementById('totalPembelian').value = new Intl.NumberFormat('id-ID').format(pembelian);
+                        document.getElementById('target1').value = target1 ? new Intl.NumberFormat('id-ID').format(target1) :
+                        '';
+                        document.getElementById('deskripsiHadiahTarget1').value = deskripsi_hadiah_target1 ?? '';
+                        document.getElementById('target2').value = target2 ? new Intl.NumberFormat('id-ID').format(target2) :
+                        '';
+                        document.getElementById('deskripsiHadiahTarget2').value = deskripsi_hadiah_target2 ?? '';
+                        document.getElementById('deskripsiHadiah').value = deskripsi_hadiah ?? '';
+                        // document.getElementById('previewGambar').innerHTML = gambarUrl ?
+                        //     `<p class="mt-2 text-muted">Gambar Saat Ini:</p><img src="${gambarUrl}" alt="Gambar Hadiah" style="width: 100px;">` :
+                        //     '';
 
-                const previewDiv = document.getElementById('previewGambar');
-                if (gambarUrl && gambarUrl !== '') {
-                    previewDiv.innerHTML = `
+                        const previewDiv = document.getElementById('previewGambar');
+                        if (gambarUrl && gambarUrl !== '') {
+                            previewDiv.innerHTML = `
             <p class="mt-2 text-muted">Gambar Saat Ini:</p>
             <img src="${gambarUrl}" alt="Gambar Hadiah" style="width: 100px;">
         `;
-                } else {
-                    previewDiv.innerHTML = '';
-                }
-            }
+                        } else {
+                            previewDiv.innerHTML = '';
+                        }
+                    }
 
-            function closeModal() {
-                document.getElementById('editModal').classList.add('d-none');
-            }
+                    function closeModal() {
+                        document.getElementById('editModal').classList.add('d-none');
+                    }
         </script>
     @endsection
