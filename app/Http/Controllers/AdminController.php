@@ -18,12 +18,92 @@ class AdminController extends Controller
     public function index()
     {
         // Ambil semua pelanggan beserta user-nya (eager load) dan pembeliannya
+        $histories = Pembelian::with('pelanggan')->orderBy('tanggal_pembelian', 'desc')->get();
         $pelanggans = Pelanggan::with(['user', 'pembelians' => function ($query) {
             $query->orderBy('tanggal_pembelian', 'desc');
         }])->get();
 
-        return view('admin.dashboard', compact('pelanggans'));
+        return view('admin.dashboard', compact('pelanggans', 'histories'));
     }
+
+    public function getHistoryByPelanggan($pelanggan_id)
+    {
+        $histories = Pembelian::where('pelanggan_id', $pelanggan_id)
+            ->orderBy('tanggal_pembelian', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'tanggal' => \Carbon\Carbon::parse($item->tanggal_pembelian)->format('d/m/Y'),
+                    'jumlah' => number_format($item->total_pembelian, 0, ',', '.')
+                ];
+            });
+
+        return response()->json($histories);
+    }
+
+    public function editPembelian(Request $request, $id)
+    {
+        try {
+            $pembelian = Pembelian::findOrFail($id);
+            $pelanggan_id = $pembelian->pelanggan_id;
+            $jumlahBaru = (int) preg_replace('/[^\d]/', '', $request->jumlah);
+
+            $pembelian->total_pembelian = $jumlahBaru;
+            $pembelian->save();
+
+            // Update total pembelian pelanggan
+            $total_pembelian = Pembelian::where('pelanggan_id', $pelanggan_id)
+                ->sum('total_pembelian');
+
+            Pelanggan::where('id', $pelanggan_id)
+                ->update(['total_pembelian' => $total_pembelian]);
+
+            return response()->json([
+                'success' => true,
+                'jumlah' => $jumlahBaru,
+                'pelanggan_id' => $pelanggan_id,
+                'total_pembelian' => $total_pembelian
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui data pembelian.'
+            ], 500);
+        }
+    }
+
+    public function deletePembelian($id)
+    {
+        try {
+            $pembelian = Pembelian::findOrFail($id);
+            $pelanggan_id = $pembelian->pelanggan_id; // Simpan ID pelanggan sebelum dihapus
+
+            $pembelian->delete();
+
+            // Hitung ulang total pembelian pelanggan
+            $total_pembelian = Pembelian::where('pelanggan_id', $pelanggan_id)
+                ->sum('total_pembelian');
+
+            // Update total pembelian di tabel pelanggan
+            Pelanggan::where('id', $pelanggan_id)
+                ->update(['total_pembelian' => $total_pembelian]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data pembelian berhasil dihapus.',
+                'pelanggan_id' => $pelanggan_id,
+                'total_pembelian' => $total_pembelian
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data pembelian.'
+            ], 500);
+        }
+    }
+
+
 
     public function tambahPembelian(Request $request, $id)
     {

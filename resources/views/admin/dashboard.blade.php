@@ -3,11 +3,11 @@
 @section('content')
     <div class="container">
         <h2>Daftar Pelanggan</h2>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+            <div class="alert alert-success">{{ session('success') }}</div>
         @endif
+
         <div class="card shadow mb-4">
             <div class="card-body">
                 <table class="table" id="pelanggan-table">
@@ -16,6 +16,7 @@
                             <th>Nama Toko</th>
                             <th>Total Pembelian</th>
                             <th>Tambah Pembelian</th>
+                            <th>History</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,6 +49,13 @@
                                         </div>
                                     </form>
                                 </td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm history-btn"
+                                        data-pelanggan-id="{{ $pelanggan->id }}"
+                                        data-nama-toko="{{ $pelanggan->nama_toko }}">
+                                        <i class="fas fa-history"></i> History
+                                    </button>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -55,6 +63,60 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal History -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="historyModalLabel">Riwayat Pembelian - <span id="modalTokoName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" id="history-table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Jumlah</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- History data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Pembelian</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        @csrf
+                        <input type="hidden" id="edit_pembelian_id" name="id">
+                        <div class="mb-3">
+                            <label for="edit_jumlah" class="form-label">Jumlah</label>
+                            <input type="text" class="form-control input-currency" id="edit_jumlah" name="jumlah"
+                                required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Styles --}}
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
@@ -100,7 +162,6 @@
             });
         });
 
-        // Datepicker + tombol kalender
         @foreach ($pelanggans as $pelanggan)
             $('#datepicker_{{ $pelanggan->id }}').datepicker({
                 format: 'dd/mm/yyyy',
@@ -113,23 +174,61 @@
             });
         @endforeach
 
-        // Inisialisasi DataTables
+        // Initialize DataTable only once
+        let pelangganTable;
         $(document).ready(function() {
-            $('#pelanggan-table').DataTable({
-                language: {
-                    search: "Cari:",
-                    lengthMenu: "Tampilkan _MENU_ entri",
-                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                    paginate: {
-                        first: "Pertama",
-                        last: "Terakhir",
-                        next: "→",
-                        previous: "←"
-                    },
-                    zeroRecords: "Tidak ditemukan",
-                    infoEmpty: "Tidak ada data tersedia",
-                    infoFiltered: "(disaring dari _MAX_ total entri)"
-                }
+            // Check if DataTable is already initialized
+            if (!$.fn.DataTable.isDataTable('#pelanggan-table')) {
+                pelangganTable = $('#pelanggan-table').DataTable({
+                    dom: '<"d-flex justify-content-between align-items-center"f>tip',
+                    language: {
+                        search: "Cari:",
+                        lengthMenu: "Tampilkan _MENU_ entri",
+                        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                        paginate: {
+                            first: "Pertama",
+                            last: "Terakhir",
+                            next: "→",
+                            previous: "←"
+                        },
+                        zeroRecords: "Tidak ditemukan",
+                        infoEmpty: "Tidak ada data tersedia",
+                        infoFiltered: "(disaring dari _MAX_ total entri)"
+                    }
+                });
+            }
+
+            // Handle history button click
+            $(document).on('click', '.history-btn', function() {
+                const pelangganId = $(this).data('pelanggan-id');
+                const namaToko = $(this).data('nama-toko');
+
+                // Set modal title
+                $('#modalTokoName').text(namaToko);
+
+                // Load history data via AJAX
+                $.get(`/admin/pembelian/history/${pelangganId}`, function(data) {
+                    const tbody = $('#history-table-body');
+                    tbody.empty();
+
+                    data.forEach(history => {
+                        const row = `
+                            <tr data-id="${history.id}">
+                                <td>${history.tanggal}</td>
+                                <td class="jumlah-display">Rp ${history.jumlah}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning edit-history">Edit</button>
+                                    <button class="btn btn-sm btn-danger delete-history" data-id="${history.id}">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.append(row);
+                    });
+
+
+                    // Show modal
+                    $('#historyModal').modal('show');
+                });
             });
         });
 
@@ -138,7 +237,6 @@
                 const form = button.closest('form');
                 const jumlahInput = form.querySelector('input[name="jumlah_pembelian"]');
                 const tanggalInput = form.querySelector('input[name="tanggal_pembelian"]');
-
                 const jumlahValue = jumlahInput.value.trim();
                 const tanggalValue = tanggalInput.value.trim();
 
@@ -152,7 +250,6 @@
                     return;
                 }
 
-                // Ambil nama toko dari baris tabel
                 const row = button.closest('tr');
                 const namaToko = row.querySelector('td:first-child').innerText.trim();
 
@@ -166,16 +263,147 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
-
-                        // Optional success message (will not be seen if redirected)
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: 'Pembelian berhasil ditambahkan!'
-                        });
                     }
                 });
             });
         });
+
+        // Edit History - Buka Modal
+        $(document).on('click', '.edit-history', function() {
+            const row = $(this).closest('tr');
+            const id = row.data('id');
+            const jumlah = row.find('.jumlah-display').text().replace(/[^\d]/g, '');
+
+            // Set nilai form
+            $('#edit_pembelian_id').val(id);
+            $('#edit_jumlah').val(jumlah);
+
+            // Inisialisasi Cleave untuk input jumlah
+            new Cleave('#edit_jumlah', {
+                numeral: true,
+                numeralThousandsGroupStyle: 'thousand',
+                numeralDecimalMark: ',',
+                delimiter: '.',
+                numeralDecimalScale: 0
+            });
+
+            // Tampilkan modal
+            $('#editModal').modal('show');
+        });
+
+        // Handle Submit Form Edit
+        $('#editForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const id = $('#edit_pembelian_id').val();
+            const jumlah = $('#edit_jumlah').val().replace(/[^\d]/g, '');
+
+            $.ajax({
+                url: `/admin/pembelian/edit/${id}`,
+                type: 'POST',
+                data: {
+                    jumlah: jumlah,
+                    _token: '{{ csrf_token() }}'
+                },
+                // Di bagian success handler form edit
+                success: function(response) {
+                    if (response.success) {
+                        // Update history table
+                        $(`tr[data-id="${id}"] .jumlah-display`).text(
+                            `Rp ${parseInt(response.jumlah).toLocaleString('id-ID')}`
+                        );
+
+                        // Update main table
+                        $(`tr[data-pelanggan-id="${response.pelanggan_id}"] td:nth-child(2)`)
+                            .text('Rp ' + formatNumber(response.total_pembelian));
+
+                        $('#editModal').modal('hide');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Data pembelian berhasil diperbarui',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat memperbarui data'
+                    });
+                }
+            });
+        });
+
+        // Delete History
+        $(document).on('click', '.delete-history', function() {
+            const id = $(this).data('id');
+            const button = $(this);
+            const historyModal = $('#historyModal'); // Simpan referensi modal
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data pembelian akan dihapus permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/admin/pembelian/delete/${id}`,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // 1. Hapus baris dari tabel history
+                                button.closest('tr').remove();
+
+                                // 2. Update total pembelian di tabel utama
+                                $(`tr:has(td:contains("${response.pelanggan_id}"))`)
+                                    .find('td:nth-child(2)')
+                                    .text('Rp ' + formatNumber(response.total_pembelian));
+
+                                Swal.fire(
+                                    'Terhapus!',
+                                    response.message,
+                                    'success'
+                                );
+
+                                // 3. Jika tidak ada data history lagi, tutup modal
+                                if ($('#history-table-body tr').length === 0) {
+                                    historyModal.modal('hide');
+                                }
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire(
+                                'Error!',
+                                'Terjadi kesalahan pada server.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
+        // Fungsi helper untuk format angka
+        function formatNumber(number) {
+            return new Intl.NumberFormat('id-ID').format(number);
+        }
     </script>
 @endsection

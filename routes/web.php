@@ -20,6 +20,9 @@ Route::middleware(['auth'])->group(function () {
     // Middleware untuk Admin
     Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/pembelian/history/{pelanggan_id}', [AdminController::class, 'getHistoryByPelanggan']);
+        Route::post('/admin/pembelian/edit/{id}', [AdminController::class, 'editPembelian']);
+        Route::delete('/admin/pembelian/delete/{id}', [AdminController::class, 'deletePembelian'])->name('admin.pembelian.delete');
         Route::post('/admin/tambah-pembelian/{id}', [AdminController::class, 'tambahPembelian'])->name('admin.tambahPembelian');
         Route::post('/admin/pelanggan/tambah-pembelian/{id}', [AdminController::class, 'tambahPembelian'])->name('admin.tambahPembelian');
 
