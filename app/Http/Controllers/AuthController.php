@@ -45,7 +45,6 @@ class AuthController extends Controller
 
     public function loginAsGuest()
     {
-        // Auth::logout();
         $produks = Produk::all();
         $barangs = Barang::orderBy('gambar')->get();
         return view('home-guest' ,compact('produks', 'barangs'));

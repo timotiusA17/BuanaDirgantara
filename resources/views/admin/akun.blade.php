@@ -190,26 +190,21 @@
             const manualField = document.getElementById('manual_nama_toko');
 
             if (select.value === 'manual') {
-                // Tampilkan input manual
                 manualInput.style.display = 'block';
                 manualField.required = true;
 
-                // Kosongkan input kodec dan username
                 document.getElementById('kodec_toko').value = '';
                 document.getElementById('name').value = '';
             } else {
-                // Sembunyikan input manual
                 manualInput.style.display = 'none';
                 manualField.required = false;
                 manualField.value = '';
 
-                // Set kodec dan username dari data
                 document.getElementById('kodec_toko').value = selectedOption.getAttribute('data-kodec');
                 document.getElementById('name').value = selectedOption.value;
             }
         }
 
-        // Aktifkan Select2 dan DataTables setelah DOM siap
         document.addEventListener('DOMContentLoaded', function() {
             $('.select2').select2({
                 placeholder: "Cari nama toko...",
@@ -231,7 +226,7 @@
     </script>
 
 
-    {{-- CSS --}}
+
     <style>
         .form-overlay {
             position: fixed;

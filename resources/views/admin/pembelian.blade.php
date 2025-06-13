@@ -43,9 +43,9 @@
                             '{{ $p->nama_toko }}',
                             {{ $p->total_pembelian }},
                             {{ $p->target1 ?? 'null' }},
-                            `{{ $p->deskripsi_hadiah_target1 ?? '' }}`,  // Perhatikan backticks
+                            `{{ $p->deskripsi_hadiah_target1 ?? '' }}`,  
                             {{ $p->target2 ?? 'null' }},
-                            `{{ $p->deskripsi_hadiah_target2 ?? '' }}`,  // Perhatikan backticks
+                            `{{ $p->deskripsi_hadiah_target2 ?? '' }}`,
                             `{{ $p->deskripsi_hadiah ?? '' }}`,
                             `{{ $p->gambar_hadiah ? $p->gambar_hadiah : '' }}`)">Edit
                                     </button>
@@ -135,12 +135,10 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                        // Hindari re-inisialisasi jika sudah ada
                         if ($.fn.DataTable.isDataTable('#customerTable')) {
                             $('#customerTable').DataTable().clear().destroy();
                         }
 
-                        // Inisialisasi DataTable dengan semua fitur lengkap
                         $('#customerTable').DataTable({
                                 paging: true,
                                 lengthChange: true,
@@ -170,7 +168,6 @@
                                     }]
                                 });
 
-                            // Format input angka
                             formatNumberInput(document.getElementById('target1')); formatNumberInput(document
                                 .getElementById('target2')); formatNumberInput(document.getElementById('totalPembelian'));
                         });
@@ -185,7 +182,7 @@
                     function openEditModal(id, nama, pembelian, target1, deskripsi_hadiah_target1, target2,
                         deskripsi_hadiah_target2,
                         deskripsi_hadiah, gambarUrl) {
-                        console.log('Gambar URL:', gambarUrl); // Debugging
+                        console.log('Gambar URL:', gambarUrl); 
                         document.getElementById('editModal').classList.remove('d-none');
                         document.getElementById('pelangganId').value = id;
                         document.getElementById('namaToko').value = nama;
@@ -197,9 +194,6 @@
                         '';
                         document.getElementById('deskripsiHadiahTarget2').value = deskripsi_hadiah_target2 ?? '';
                         document.getElementById('deskripsiHadiah').value = deskripsi_hadiah ?? '';
-                        // document.getElementById('previewGambar').innerHTML = gambarUrl ?
-                        //     `<p class="mt-2 text-muted">Gambar Saat Ini:</p><img src="${gambarUrl}" alt="Gambar Hadiah" style="width: 100px;">` :
-                        //     '';
 
                         const previewDiv = document.getElementById('previewGambar');
                         if (gambarUrl && gambarUrl !== '') {

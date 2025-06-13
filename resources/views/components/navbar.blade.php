@@ -55,7 +55,6 @@
         const menu = document.getElementById('mobile-menu');
         menu.classList.toggle('hidden');
         
-        // Optional: Toggle aria-expanded attribute for accessibility
         const isExpanded = this.getAttribute('aria-expanded') === 'true';
         this.setAttribute('aria-expanded', !isExpanded);
     });

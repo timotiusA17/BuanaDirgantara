@@ -314,7 +314,6 @@
                     $progress_target2 = min(100, round($progress_target2, 1));
                     $sisa_transaksi = max(0, $target_aktif - $totalPembelian);
 
-                    // Calculate journey progress
                     $max_target = max($target1, $target2);
                     $journey_progress_percent = min(100, ($totalPembelian / $max_target) * 100);
                     $target1_position_percent = ($target1 / $max_target) * 100;

@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Paginator::useBootstrap(); // atau gunakan Tailwind jika sudah sesuai
+        Paginator::useBootstrap(); 
         if (config('app.env') === 'production') {
             URL::forceScheme('https');
         }

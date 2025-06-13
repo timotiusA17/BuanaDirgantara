@@ -18,7 +18,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [PelangganController::class, 'home'])->name('home');
 
 
-    // Middleware untuk Admin
     Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/pembelian/history/{pelanggan_id}', [AdminController::class, 'getHistoryByPelanggan']);
@@ -28,7 +27,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/admin/pelanggan/tambah-pembelian/{id}', [AdminController::class, 'tambahPembelian'])->name('admin.tambahPembelian');
 
         Route::view('/admin/katalog', 'admin.katalog')->name('admin.katalog');
-        // Route::view('/admin/pembelian', 'admin.pembelian')->name('admin.pembelian');
         Route::view('/admin/leaderboard', 'admin.leaderboard')->name('admin.leaderboard');
         Route::view('/admin/promo', 'admin.promo')->name('admin.promo');
         Route::view('/admin/akun', 'admin.akun')->name('admin.akun');
@@ -50,14 +48,12 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/admin/promo/{id}', [AdminController::class, 'destroy'])->name('admin.promo.destroy');
     });
 
-    // Middleware untuk Owner
     Route::middleware(['role:owner'])->group(function () {
         Route::get('/owner/dashboard', function () {
             return view('owner.dashboard');
         })->name('owner.dashboard');
     });
 
-    // Middleware untuk Pelanggan
     Route::middleware(['auth', RoleMiddleware::class . ':pelanggan'])->group(function () {
         Route::get('/leaderboard', [PelangganController::class, 'leaderboard'])->name('leaderboard');
         Route::view('/promo', 'pelanggan.promo')->name('promo');
@@ -68,23 +64,19 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/promo', [PelangganController::class, 'promoPage'])->name('promo');
     });
 
-    // admin menambahkan total pembelian
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::post('/admin/pembelian/{id}', [AdminController::class, 'tambahPembelian'])->name('admin.tambahPembelian');
 
-    // admin menambahkan user baru
     Route::get('/admin/akun', [AdminController::class, 'showCreatePelangganForm'])->name('admin.akun');
     Route::post('/admin/akun', [AdminController::class, 'storePelanggan'])->name('admin.akun.store');
 
-    //admin delete pelanggan
     Route::delete('/admin/akun/{id}', [AdminController::class, 'deleteUser'])->name('admin.akun.delete');
 
-    //admin edit pelanggan
     Route::get('/admin/akun/{id}/edit', [AdminController::class, 'editPelanggan'])->name('admin.akun.edit');
     Route::post('/admin/akun/{id}/update', [AdminController::class, 'updatePelanggan'])->name('admin.akun.update');
 
     Route::post('/logout', function () {
         Auth::logout();
-        return redirect('/'); // atau redirect ke halaman login
+        return redirect('/'); 
     })->name('logout');
 });

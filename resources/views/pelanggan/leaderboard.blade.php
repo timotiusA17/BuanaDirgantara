@@ -184,7 +184,6 @@
         }
     </style>
     <script>
-        // Format numbers with 't' for trillions, 'jt' for millions
         function formatNumber(value) {
             if (value >= 1000000000000) {
                 return 'Rp ' + (value / 1000000000000).toFixed(1) + 't';
@@ -195,12 +194,10 @@
             return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
         }
 
-        // Function to determine color based on purchase amount
         function getColorForAmount(amount, isCurrentUser = false) {
             if (isCurrentUser) {
-                return 'rgba(255, 193, 7, 1)'; // Highlight kuning terang
+                return 'rgba(255, 193, 7, 1)';
             }
-            // Sisanya tetap
             if (amount >= 100000000) return 'rgba(0, 82, 204, 0.8)';
             if (amount >= 75000000) return 'rgba(0, 113, 206, 0.8)';
             if (amount >= 50000000) return 'rgba(0, 153, 255, 0.8)';
@@ -209,12 +206,10 @@
         }
 
 
-        // General Leaderboard Chart (Horizontal bars for rank 4+)
         const generalChartData = @json($generalChartData);
         const generalCtx = document.getElementById('generalLeaderboardChart').getContext('2d');
-        const userId = {{ $userId }}; // Get current user ID from PHP
+        const userId = {{ $userId }}; 
 
-        // Find current user's position in the leaderboard
         let userIndex = -1;
         generalChartData.forEach((data, index) => {
             if (data.user_id === userId) {
@@ -222,12 +217,10 @@
             }
         });
 
-        // Prepare background colors array based on purchase amounts
         const backgroundColors = generalChartData.map((data, index) =>
             data.user_id === userId ? 'rgba(255, 193, 7, 0.9)' : getColorForAmount(data.total)
         );
 
-        // Custom plugin to display values at bar ends and highlight current user
         const barValuePlugin = {
             id: 'barValuePlugin',
             afterDraw: (chart) => {
@@ -243,39 +236,21 @@
                         const formattedValue = formatNumber(value);
                         const isCurrentUser = generalChartData[index].user_id === userId;
 
-                        // Hanya menampilkan nilai di ujung kanan bar
                         const valueX = bar.x + 10;
                         const textY = bar.y;
 
-                        // Background untuk nilai
-                        // const textWidth = ctx.measureText(formattedValue).width;
-                        // ctx.fillStyle = isCurrentUser ? 'rgba(255, 235, 59, 0.9)' :
-                        //     'rgba(255, 255, 255, 0.8)';
-                        // ctx.fillRect(valueX - 2, textY - 10, textWidth + 4, 20);
-
-                        // Teks nilai
                         ctx.fillStyle = isCurrentUser ? '#000000' : '#2d3748';
                         ctx.font = isCurrentUser ? 'bold 14px Arial' : '14px Arial';
                         ctx.fillText(formattedValue, valueX, textY);
 
-                        // Highlight untuk user saat ini
                         if (isCurrentUser) {
-                            // Glow effect
                             ctx.shadowColor = 'rgba(255, 193, 7, 0.7)';
                             ctx.shadowBlur = 15;
                             ctx.shadowOffsetX = 0;
                             ctx.shadowOffsetY = 0;
 
-                            // Border tebal
                             ctx.strokeStyle = 'rgba(255, 152, 0, 1)';
                             ctx.lineWidth = 3;
-                            // ctx.strokeRect(
-                            //     bar.x - bar.width / 2,
-                            //     bar.y - bar.height / 2,
-                            //     bar.width,
-                            //     bar.height
-                            // );
-
                             ctx.shadowColor = 'transparent';
                         }
                     });
@@ -390,7 +365,7 @@
                             display: false
                         },
                         ticks: {
-                            mirror: false, // Changed from true to show labels on left
+                            mirror: false, 
                             padding: 10,
                             font: function(context) {
                                 if (generalChartData[context.index]?.user_id === userId) {
@@ -415,7 +390,7 @@
                 },
                 layout: {
                     padding: {
-                        left: 0, // Increased space for left labels
+                        left: 0, 
                         right: 10,
                         top: 20,
                         bottom: 20
@@ -425,11 +400,8 @@
             plugins: [barValuePlugin]
         });
 
-        // Top 3 Chart (Vertical bars)
         const top3Data = @json($top3ChartData);
         const top3Ctx = document.getElementById('top3Chart').getContext('2d');
-
-        // Create gradients for top 3 bars
         const goldGradient = top3Ctx.createLinearGradient(0, 0, 0, 300);
         goldGradient.addColorStop(0, 'rgba(255, 215, 0, 0.9)');
         goldGradient.addColorStop(1, 'rgba(255, 165, 0, 0.9)');

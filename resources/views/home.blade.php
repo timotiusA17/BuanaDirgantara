@@ -61,7 +61,6 @@
 
         const totalPages = Math.min(Math.ceil(visibleCards.length / itemsPerPage), maxPagesToShow);
 
-        // Reset display
         cards.forEach(card => card.style.display = 'none');
 
         visibleCards.forEach((card, index) => {
@@ -89,7 +88,7 @@
             pagination.appendChild(createButton('«', 1, currentPage === 1));
             pagination.appendChild(createButton('<', currentPage - 1, currentPage === 1));
 
-            // Range pagination tampil max 7 tombol halaman secara dinamis
+            // buat atur pagination nya 7
             let start = Math.max(currentPage - 3, 1);
             let end = Math.min(start + 6, totalPages);
             if (end - start < 6) start = Math.max(end - 6, 1);

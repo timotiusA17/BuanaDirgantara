@@ -134,7 +134,6 @@
         }
     </style>
 
-    {{-- Scripts --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
@@ -142,7 +141,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Format input jumlah pembelian
         document.querySelectorAll('.input-currency').forEach(input => {
             new Cleave(input, {
                 numeral: true,
@@ -153,7 +151,6 @@
             });
         });
 
-        // Format input tanggal
         document.querySelectorAll('.date-input').forEach(input => {
             new Cleave(input, {
                 date: true,
@@ -174,10 +171,8 @@
             });
         @endforeach
 
-        // Initialize DataTable only once
         let pelangganTable;
         $(document).ready(function() {
-            // Check if DataTable is already initialized
             if (!$.fn.DataTable.isDataTable('#pelanggan-table')) {
                 pelangganTable = $('#pelanggan-table').DataTable({
                     dom: '<"d-flex justify-content-between align-items-center"f>tip',
@@ -198,15 +193,12 @@
                 });
             }
 
-            // Handle history button click
             $(document).on('click', '.history-btn', function() {
                 const pelangganId = $(this).data('pelanggan-id');
                 const namaToko = $(this).data('nama-toko');
 
-                // Set modal title
                 $('#modalTokoName').text(namaToko);
 
-                // Load history data via AJAX
                 $.get(`/admin/pembelian/history/${pelangganId}`, function(data) {
                     const tbody = $('#history-table-body');
                     tbody.empty();
@@ -225,8 +217,6 @@
                         tbody.append(row);
                     });
 
-
-                    // Show modal
                     $('#historyModal').modal('show');
                 });
             });
@@ -268,17 +258,14 @@
             });
         });
 
-        // Edit History - Buka Modal
         $(document).on('click', '.edit-history', function() {
             const row = $(this).closest('tr');
             const id = row.data('id');
             const jumlah = row.find('.jumlah-display').text().replace(/[^\d]/g, '');
 
-            // Set nilai form
             $('#edit_pembelian_id').val(id);
             $('#edit_jumlah').val(jumlah);
 
-            // Inisialisasi Cleave untuk input jumlah
             new Cleave('#edit_jumlah', {
                 numeral: true,
                 numeralThousandsGroupStyle: 'thousand',
@@ -287,11 +274,9 @@
                 numeralDecimalScale: 0
             });
 
-            // Tampilkan modal
             $('#editModal').modal('show');
         });
 
-        // Handle Submit Form Edit
         $('#editForm').on('submit', function(e) {
             e.preventDefault();
 
@@ -305,15 +290,12 @@
                     jumlah: jumlah,
                     _token: '{{ csrf_token() }}'
                 },
-                // Di bagian success handler form edit
                 success: function(response) {
                     if (response.success) {
-                        // Update history table
                         $(`tr[data-id="${id}"] .jumlah-display`).text(
                             `Rp ${parseInt(response.jumlah).toLocaleString('id-ID')}`
                         );
 
-                        // Update main table
                         $(`tr[data-pelanggan-id="${response.pelanggan_id}"] td:nth-child(2)`)
                             .text('Rp ' + formatNumber(response.total_pembelian));
 
@@ -338,11 +320,10 @@
             });
         });
 
-        // Delete History
         $(document).on('click', '.delete-history', function() {
             const id = $(this).data('id');
             const button = $(this);
-            const historyModal = $('#historyModal'); // Simpan referensi modal
+            const historyModal = $('#historyModal'); 
 
             Swal.fire({
                 title: 'Apakah Anda yakin?',
@@ -363,10 +344,10 @@
                         },
                         success: function(response) {
                             if (response.success) {
-                                // 1. Hapus baris dari tabel history
+                                // Hapus baris dari tabel history
                                 button.closest('tr').remove();
 
-                                // 2. Update total pembelian di tabel utama
+                                // Update total pembelian di tabel utama
                                 $(`tr:has(td:contains("${response.pelanggan_id}"))`)
                                     .find('td:nth-child(2)')
                                     .text('Rp ' + formatNumber(response.total_pembelian));
@@ -377,7 +358,7 @@
                                     'success'
                                 );
 
-                                // 3. Jika tidak ada data history lagi, tutup modal
+                                // kalo history udh ga ada, close modal
                                 if ($('#history-table-body tr').length === 0) {
                                     historyModal.modal('hide');
                                 }
@@ -401,7 +382,6 @@
             });
         });
 
-        // Fungsi helper untuk format angka
         function formatNumber(number) {
             return new Intl.NumberFormat('id-ID').format(number);
         }

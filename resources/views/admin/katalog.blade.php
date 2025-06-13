@@ -198,15 +198,10 @@
         }
 
         function openEditModal(id, nama, harga, satuan) {
-            // Isi form dengan data produk
             document.getElementById('editNama').value = nama;
             document.getElementById('editHarga').value = harga;
             document.getElementById('editSatuan').value = satuan;
-
-            // Ubah action form sesuai ID produk
             document.getElementById('editForm').action = `/admin/katalog/${id}`;
-
-            // Tampilkan modal edit
             document.getElementById('editModal').style.display = 'flex';
         }
 
@@ -214,7 +209,6 @@
             document.getElementById('editModal').style.display = 'none';
         }
 
-        // Notifikasi sukses (jika ada dari session)
         @if (session('success'))
             Swal.fire({
                 icon: 'success',
@@ -224,7 +218,6 @@
             });
         @endif
 
-        // Konfirmasi sebelum delete
         document.querySelectorAll('form[data-confirm-delete]').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();

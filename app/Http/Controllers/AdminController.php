@@ -17,7 +17,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // Ambil semua pelanggan beserta user-nya (eager load) dan pembeliannya
+        // buat ambil pelanggan dan masing2 pembelian nya
         $histories = Pembelian::with('pelanggan')->orderBy('tanggal_pembelian', 'desc')->get();
         $pelanggans = Pelanggan::with(['user', 'pembelians' => function ($query) {
             $query->orderBy('tanggal_pembelian', 'desc');
@@ -77,11 +77,11 @@ class AdminController extends Controller
     {
         try {
             $pembelian = Pembelian::findOrFail($id);
-            $pelanggan_id = $pembelian->pelanggan_id; // Simpan ID pelanggan sebelum dihapus
+            $pelanggan_id = $pembelian->pelanggan_id; 
 
             $pembelian->delete();
 
-            // Hitung ulang total pembelian pelanggan
+            // Hitung ulang total pembelian 
             $total_pembelian = Pembelian::where('pelanggan_id', $pelanggan_id)
                 ->sum('total_pembelian');
 
@@ -108,19 +108,18 @@ class AdminController extends Controller
     public function tambahPembelian(Request $request, $id)
     {
         $request->validate([
-            'jumlah_pembelian' => 'required|string', // jangan numeric karena masih ada titik
+            'jumlah_pembelian' => 'required|string', 
             'tanggal_pembelian' => 'required|date_format:d/m/Y'
         ]);
 
-        // Ubah jumlah menjadi integer dari string '1.000.000' → 1000000
+        
         $jumlah = (int) str_replace('.', '', $request->jumlah_pembelian);
 
-        // Ubah tanggal dari dd/mm/yyyy ke yyyy-mm-dd
         $tanggal = \Carbon\Carbon::createFromFormat('d/m/Y', $request->tanggal_pembelian)->format('Y-m-d');
 
         $pelanggan = Pelanggan::findOrFail($id);
 
-        // Simpan ke tabel pembelians
+        // Simpan ke tabel pembelian
         $pembelian = new Pembelian([
             'pelanggan_id' => $id,
             'total_pembelian' => $jumlah,
@@ -128,7 +127,7 @@ class AdminController extends Controller
         ]);
         $pembelian->save();
 
-        // Update total pembelian di tabel pelanggans
+        // Update total pembelian di tabel pelanggan
         $pelanggan->total_pembelian += $jumlah;
         $pelanggan->save();
 
@@ -139,7 +138,6 @@ class AdminController extends Controller
     public function showCreatePelangganForm()
     {
         $users = User::with('pelanggan')->get();
-        // Ambil customer yang belum memiliki user (akun)
         $customers = Customer::whereNotIn('PERSC', User::pluck('name'))->get();
 
         return view('admin.akun', compact('users', 'customers'));
@@ -148,40 +146,34 @@ class AdminController extends Controller
 
     public function storePelanggan(Request $request)
     {
-        // Validasi umum
         $request->validate([
             'name' => 'required|string|unique:users,name',
             'password' => 'required|string|min:8',
             'role' => 'required|in:admin,pelanggan',
         ]);
 
-        // Validasi tambahan jika role = pelanggan
         if ($request->role === 'pelanggan') {
             $request->validate([
                 'nama_toko' => 'required|string',
                 'total_pembelian' => 'required|numeric|min:0',
             ]);
 
-            // Validasi kodec hanya jika bukan input manual
             if ($request->nama_toko !== 'manual') {
                 $request->validate([
                     'kodec_toko' => 'required|string|size:4',
                 ]);
             }
 
-            // Gunakan nama toko dari input manual jika dipilih
             $namaToko = $request->nama_toko === 'manual' ? $request->manual_nama_toko : $request->nama_toko;
             $kodec = $request->nama_toko === 'manual' ? null : $request->kodec_toko;
         }
 
-        // Buat user
         $user = User::create([
             'name' => $request->name,
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
 
-        // Jika role-nya pelanggan, buat data tambahan di tabel pelanggan
         if ($request->role === 'pelanggan') {
             Pelanggan::create([
                 'user_id' => $user->id,
@@ -276,7 +268,6 @@ class AdminController extends Controller
             return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
         }
 
-        // Simpan hanya satu gambar (misalnya pada pelanggan dengan id 1 sebagai "dummy")
         Pelanggan::where('id', 1)->update([
             'reward_image' => $uploadedFile['secure_url']
         ]);
@@ -286,7 +277,7 @@ class AdminController extends Controller
 
     public function managePembelian()
     {
-        $pelanggan = Pelanggan::all(); // Mengambil semua data pelanggan
+        $pelanggan = Pelanggan::all(); 
         return view('admin.pembelian')->with('pelanggan', $pelanggan);
     }
 
@@ -305,12 +296,10 @@ class AdminController extends Controller
 
         $pelanggan = Pelanggan::findOrFail($request->pelanggan_id);
 
-        // Convert angka format Indonesia menjadi integer
         $totalPembelian = (int) str_replace('.', '', $request->total_pembelian);
         $target1 = $request->target1 ? (int) str_replace('.', '', $request->target1) : null;
         $target2 = $request->target2 ? (int) str_replace('.', '', $request->target2) : null;
 
-        // Simpan perubahan ke model
         $pelanggan->total_pembelian = $totalPembelian;
         $pelanggan->target1 = $target1;
         $pelanggan->deskripsi_hadiah_target1 = $request->deskripsi_hadiah_target1;
@@ -318,12 +307,9 @@ class AdminController extends Controller
         $pelanggan->deskripsi_hadiah_target2 = $request->deskripsi_hadiah_target2;
         $pelanggan->deskripsi_hadiah = $request->deskripsi_hadiah;
 
-        $updated = $pelanggan->isDirty(); // cek apakah data berubah
+        $updated = $pelanggan->isDirty(); // ngecek datany berubah atau ga
 
-        // Tangani upload gambar baru
         if ($request->hasFile('gambar_hadiah')) {
-            // if ($pelanggan->gambar_hadiah && Storage::disk('public')->exists($pelanggan->gambar_hadiah)) {
-            //     Storage::disk('public')->delete($pelanggan->gambar_hadiah); // Hapus gambar lama
             $path = 'target';
             $file_extension = $request->file('gambar_hadiah')->getClientOriginalName();
             $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
@@ -355,7 +341,7 @@ class AdminController extends Controller
 
             $path = $request->file('gambar_hadiah')->store('gambar_hadiah', 'public');
             $pelanggan->gambar_hadiah = $uploadedFile['secure_url'];
-            $updated = true; // karena file diubah
+            $updated = true; 
         }
 
         $pelanggan->save();
@@ -383,9 +369,6 @@ class AdminController extends Controller
             'gambar' => 'nullable|image|max:2048',
         ]);
 
-        // $path = $request->hasFile('gambar')
-        //     ? $request->file('gambar')->store('promo', 'public')
-        //     : null;
 
         $path = 'promo';
         $file_extension = $request->file('gambar')->getClientOriginalName();
@@ -422,7 +405,7 @@ class AdminController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'diskon' => $request->diskon,
-            'gambar' => $uploadedFile['secure_url'], // atau 'url' jika tidak pakai SSL
+            'gambar' => $uploadedFile['secure_url'], 
         ]);
 
         return redirect()->route('admin.promo')->with('success', 'Promo berhasil ditambahkan.');
@@ -447,8 +430,7 @@ class AdminController extends Controller
         $promo->diskon = $request->diskon;
 
         if ($request->hasFile('gambar')) {
-            // if ($promo->gambar && Storage::disk('public')->exists($promo->gambar)) {
-            //     Storage::disk('public')->delete($promo->gambar);
+
             $path = 'promo';
             $file_extension = $request->file('gambar')->getClientOriginalName();
             $fileName = pathinfo($file_extension, PATHINFO_FILENAME);
@@ -479,7 +461,6 @@ class AdminController extends Controller
             }
 
 
-            // $path = $request->file('gambar')->store('promo', 'public');
             $promo->gambar = $uploadedFile['secure_url'];
         }
 

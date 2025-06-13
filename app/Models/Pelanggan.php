@@ -9,13 +9,13 @@ class Pelanggan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pelanggans'; // Pastikan nama tabel benar
+    protected $table = 'pelanggans'; 
 
     protected $fillable = [
         'user_id',
         'nama_toko',
         'total_pembelian',
-        'KODEC_toko', // Tambahkan ini
+        'KODEC_toko', 
 
         'target1',
         'target2',

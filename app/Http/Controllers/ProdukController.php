@@ -63,7 +63,7 @@ class ProdukController extends Controller
             'nama' => $request->nama,
             'harga' => $request->harga,
             'satuan' => $request->satuan,
-            'gambar' => $uploadedFile['secure_url'], // atau 'url' jika tidak pakai SSL
+            'gambar' => $uploadedFile['secure_url'], 
         ]);
 
         return redirect()->route('admin.katalog')->with('success', 'Produk berhasil ditambahkan.');
@@ -83,12 +83,7 @@ class ProdukController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Cara 1: Menggunakan first()
         $produk = Barang::where('KODEB', $id)->first();
-        // dd($produk);
-        // Atau Cara 2: Menggunakan find() jika KODEB adalah primary key
-        // $produk = Barang::find($id);
-
         if (!$produk) {
             return redirect()->back()->with('error', 'Produk tidak ditemukan.');
         }
@@ -97,7 +92,6 @@ class ProdukController extends Controller
         $produk->HJUALB = $request->harga;
         $produk->SATUANB = $request->satuan;
         if ($request->hasFile('gambar')) {
-            // $file = $request->file('gambar');
             $path = 'promo';
             $produk->gambar = $path;
             $file_extension = $request->file('gambar')->getClientOriginalName();

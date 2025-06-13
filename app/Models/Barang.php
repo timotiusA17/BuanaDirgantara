@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Barang extends Model
 {
     use HasFactory;
-    protected $table = 'gudang'; // Pastikan nama tabel benar
-    protected $primaryKey = 'KODEB'; // Set primary key
-    public $incrementing = false; // Jika KODEB bukan integer auto-increment
-    protected $keyType = 'string'; // Jika KODEB adalah string
+    protected $table = 'gudang'; 
+    protected $primaryKey = 'KODEB'; 
+    public $incrementing = false; 
+    protected $keyType = 'string';
     
-    // Jika tidak menggunakan timestamp
     public $timestamps = false;
     protected $fillable = [
         'NAMAB',

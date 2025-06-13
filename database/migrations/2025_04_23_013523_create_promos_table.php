@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
-            $table->decimal('diskon', 5, 2); // cukup untuk diskon sampai 100.00
+            $table->decimal('diskon', 5, 2); 
             $table->string('gambar')->nullable();
             $table->timestamps();
         });

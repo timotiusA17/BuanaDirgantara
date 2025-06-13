@@ -27,22 +27,19 @@ class PelangganController extends Controller
     public function leaderboard()
     {
         $pelanggans = Pelanggan::with('user')->get();
-        $userId = auth()->user()->id;
+        $userId = Auth::user()->id;
         $rewardImage = Pelanggan::whereNotNull('reward_image')->value('reward_image');
 
-        // Sort all pelanggans by total_pembelian descending
-        $sortedPelanggans = $pelanggans->sortByDesc('total_pembelian')->values(); // <- tambah ->values() untuk reset index
+        $sortedPelanggans = $pelanggans->sortByDesc('total_pembelian')->values(); 
 
-        // Temukan ranking user login
         $userRank = null;
         foreach ($sortedPelanggans as $index => $p) {
             if ($p->user_id == $userId) {
-                $userRank = $index + 1; // +1 karena index dimulai dari 0
+                $userRank = $index + 1; 
                 break;
             }
         }
 
-        // Prepare data for general leaderboard (rank 4+)
         $generalChartData = [];
         $labelCounter = 'A';
 
@@ -51,11 +48,10 @@ class PelangganController extends Controller
             $generalChartData[] = [
                 'label' => $label,
                 'total' => $p->total_pembelian,
-                'user_id' => $p->user_id, // <- tambahkan ini untuk JavaScript chart
+                'user_id' => $p->user_id,
             ];
         }
 
-        // Prepare data for top 3 chart
         $top3ChartData = [];
         foreach ($sortedPelanggans->take(3) as $p) {
             $label = $p->user_id == $userId ? $p->nama_toko : substr($p->nama_toko, 0, 3) . '***';
@@ -65,7 +61,6 @@ class PelangganController extends Controller
             ];
         }
 
-        // Get top 3 pelanggans
         $top3 = $sortedPelanggans->take(3)->values();
 
         return view('pelanggan.leaderboard', [
@@ -73,7 +68,7 @@ class PelangganController extends Controller
             'top3ChartData' => $top3ChartData,
             'top3' => $top3,
             'userId' => $userId,
-            'userRank' => $userRank, // <- tambahkan ini
+            'userRank' => $userRank, 
             'rewardImage' => $rewardImage
         ]);
     }
@@ -84,7 +79,6 @@ class PelangganController extends Controller
     {
         $produks = Produk::all();
         $barangs = Barang::orderBy('gambar')->get();
-        // dd($barangs[0]['gambar']);
         return view('home', compact('produks', 'barangs'));
     }
 
@@ -145,16 +139,12 @@ class PelangganController extends Controller
         $deskripsi_hadiah_target2 = $pelanggan->deskripsi_hadiah_target2;
         $deskripsi_hadiah = $pelanggan->deskripsi_hadiah;
 
-        // JANGAN tambahkan lagi "gambar_hadiah/" karena sudah disimpan lengkap
         $gambar_hadiah = $pelanggan->gambar_hadiah;
-            // ? Storage::url($pelanggan->gambar_hadiah)
-            // : null
         
         $target_aktif = $totalPembelian < $target1 ? $target1 : $target2;
         $progress = $target_aktif > 0 ? ($totalPembelian / $target_aktif) * 100 : 0;
         $progress = min(100, round($progress, 1));
 
-        // Ambil data pembelian per bulan
         $pembelianPerBulan = Pembelian::where('pelanggan_id', $pelanggan->id)
             ->selectRaw('EXTRACT(MONTH FROM tanggal_pembelian) as bulan, SUM(total_pembelian) as total')
             ->whereRaw('EXTRACT(YEAR FROM tanggal_pembelian) = ?', [date('Y')])
@@ -162,16 +152,13 @@ class PelangganController extends Controller
             ->orderBy('bulan')
             ->get();
 
-        // Format data untuk chart
         $chartData = [];
         $bulanLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
 
-        // Inisialisasi semua bulan dengan nilai 0
         foreach (range(1, 12) as $bulan) {
             $chartData[$bulan] = 0;
         }
 
-        // Isi data yang ada
         foreach ($pembelianPerBulan as $item) {
             $chartData[$item->bulan] = $item->total;
         }

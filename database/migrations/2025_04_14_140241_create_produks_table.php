@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->decimal('harga', 15, 2);
             $table->enum('satuan', ['pcs', 'pack']);
-            $table->string('gambar')->nullable(); // path gambar
+            $table->string('gambar')->nullable(); 
             $table->timestamps();
         });
     }

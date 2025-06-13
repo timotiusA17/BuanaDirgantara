@@ -193,24 +193,18 @@
         </div>
 
 
-        {{-- Script --}}
         <script>
             function openPromoModal() {
                 document.getElementById('promoModal').classList.remove('d-none');
             }
 
             function openEditPromoModal(promo) {
-                // Set form action
                 document.getElementById('editPromoForm').action = `/admin/promo/${promo.id}`;
-
-                // Set values
                 document.getElementById('editNama').value = promo.nama;
                 document.getElementById('editDeskripsi').value = promo.deskripsi;
                 document.getElementById('editMulai').value = promo.tanggal_mulai;
                 document.getElementById('editSelesai').value = promo.tanggal_selesai;
                 document.getElementById('editDiskon').value = promo.diskon;
-
-                // Show modal
                 document.getElementById('editPromoModal').classList.remove('d-none');
             }
 
