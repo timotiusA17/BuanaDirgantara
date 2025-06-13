@@ -23,7 +23,7 @@
         </form>
 
         <!-- Login as Guest -->
-        <a href="{{ route('home') }}" class="block text-center w-full bg-gray-300 text-gray-700 p-2 rounded-lg">
+        <a href="{{ route('guest.login') }}" class="block text-center w-full bg-gray-300 text-gray-700 p-2 rounded-lg">
             Login as Guest
         </a>
     </div>

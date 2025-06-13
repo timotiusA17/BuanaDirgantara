@@ -11,6 +11,7 @@ use App\Models\Produk;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/guest-login', [AuthController::class, 'loginAsGuest'])->name('guest.login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {

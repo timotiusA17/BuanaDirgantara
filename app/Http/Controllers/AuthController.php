@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barang;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -25,7 +27,7 @@ class AuthController extends Controller
 
             if (Auth::user()->role === 'admin' || Auth::user()->role === 'owner') {
                 return redirect()->route('admin.dashboard');
-            } elseif (Auth::user()->role === 'pelanggan'){
+            } elseif (Auth::user()->role === 'pelanggan') {
                 return redirect()->route('home');
             }
         }
@@ -40,5 +42,13 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/login');
     }
+
+    public function loginAsGuest()
+    {
+        // Auth::logout();
+        $produks = Produk::all();
+        $barangs = Barang::orderBy('gambar')->get();
+        return view('home-guest' ,compact('produks', 'barangs'));
+    }
+
 }
-    

@@ -8,7 +8,7 @@
         <!-- Center: Menu (hidden on mobile) -->
         <div class="hidden md:flex md:items-center md:justify-center flex-1 mx-4">
             <ul class="flex space-x-6">
-                <li><a href="{{ route('home') }}" class="hover:underline">Home</a></li>
+                <li><a href="{{ route('home') }}" class="hover:underline test">Home</a></li>
                 <li><a href="{{ route('personal.achievement') }}" class="hover:underline">Personal Achievement</a></li>
                 <li><a href="{{ route('leaderboard') }}" class="hover:underline">Leaderboard</a></li>
                 <li><a href="{{ route('promo') }}" class="hover:underline">Promo</a></li>
@@ -20,7 +20,7 @@
         <div class="hidden md:block flex-shrink-0">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="hover:underline">Logout</button>
+                <button type="submit" class="hover:underline" id="button-logout">Logout</button>
             </form>
         </div>
 
@@ -37,14 +37,14 @@
     <!-- Mobile menu (hidden by default) -->
     <div id="mobile-menu" class="hidden md:hidden bg-black pb-4 px-4">
         <div class="flex flex-col space-y-3">
-            <a href="{{ route('home') }}" class="block hover:underline py-2">Home</a>
+            <a href="{{ route('home') }}" class="block hover:underline py-2 test">Home</a>
             <a href="{{ route('personal.achievement') }}" class="block hover:underline py-2">Personal Achievement</a>
             <a href="{{ route('leaderboard') }}" class="block hover:underline py-2">Leaderboard</a>
             <a href="{{ route('promo') }}" class="block hover:underline py-2">Promo</a>
             <a href="{{ route('pelanggan.profile') }}" class="block hover:underline py-2">Profile</a>
             <form action="{{ route('logout') }}" method="POST" class="pt-2 border-t border-gray-700">
                 @csrf
-                <button type="submit" class="hover:underline w-full text-left">Logout</button>
+                <button type="submit" class="hover:underline w-full text-left" id="button-logout2">Logout</button>
             </form>
         </div>
     </div>
