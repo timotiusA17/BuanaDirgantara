@@ -633,8 +633,10 @@
                                     weight: 'bold'
                                 },
                                 callback: function(value) {
-                                    return 'Rp ' + value.toLocaleString('id-ID');
-                                }
+                                    return 'Rp ' + (value / 1000000).toLocaleString('id-ID') +
+                                        ' jt'; // Menampilkan dalam juta
+                                },
+                                stepSize: 20000000
                             }
                         },
                         x: {
