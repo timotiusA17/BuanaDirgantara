@@ -268,7 +268,7 @@ class AdminController extends Controller
             return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
         }
 
-        Pelanggan::where('id', 1)->update([
+        Pelanggan::all()->update([
             'reward_image' => $uploadedFile['secure_url']
         ]);
 
