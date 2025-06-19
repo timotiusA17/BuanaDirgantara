@@ -35,8 +35,6 @@ class PelangganController extends Controller
         
         $sortedPelanggans = $pelanggans->sortByDesc('total_pembelian')->values(); 
 
-        dd($rewardImage);
-
         $userRank = null;
         foreach ($sortedPelanggans as $index => $p) {
             if ($p->user_id == $userId) {
