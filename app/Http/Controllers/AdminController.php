@@ -77,7 +77,7 @@ class AdminController extends Controller
     {
         try {
             $pembelian = Pembelian::findOrFail($id);
-            $pelanggan_id = $pembelian->pelanggan_id; 
+            $pelanggan_id = $pembelian->pelanggan_id;
 
             $pembelian->delete();
 
@@ -108,11 +108,11 @@ class AdminController extends Controller
     public function tambahPembelian(Request $request, $id)
     {
         $request->validate([
-            'jumlah_pembelian' => 'required|string', 
+            'jumlah_pembelian' => 'required|string',
             'tanggal_pembelian' => 'required|date_format:d/m/Y'
         ]);
 
-        
+
         $jumlah = (int) str_replace('.', '', $request->jumlah_pembelian);
 
         $tanggal = \Carbon\Carbon::createFromFormat('d/m/Y', $request->tanggal_pembelian)->format('Y-m-d');
@@ -268,7 +268,11 @@ class AdminController extends Controller
             return back()->with('error', 'Gagal upload gambar ke Cloudinary.');
         }
 
-        Pelanggan::all()->update([
+        // Pelanggan::all()->update([
+        //     'reward_image' => $uploadedFile['secure_url']
+        // ]);
+
+        Pelanggan::query()->update([
             'reward_image' => $uploadedFile['secure_url']
         ]);
 
@@ -277,7 +281,7 @@ class AdminController extends Controller
 
     public function managePembelian()
     {
-        $pelanggan = Pelanggan::all(); 
+        $pelanggan = Pelanggan::all();
         return view('admin.pembelian')->with('pelanggan', $pelanggan);
     }
 
@@ -341,7 +345,7 @@ class AdminController extends Controller
 
             $path = $request->file('gambar_hadiah')->store('gambar_hadiah', 'public');
             $pelanggan->gambar_hadiah = $uploadedFile['secure_url'];
-            $updated = true; 
+            $updated = true;
         }
 
         $pelanggan->save();
@@ -405,7 +409,7 @@ class AdminController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'diskon' => $request->diskon,
-            'gambar' => $uploadedFile['secure_url'], 
+            'gambar' => $uploadedFile['secure_url'],
         ]);
 
         return redirect()->route('admin.promo')->with('success', 'Promo berhasil ditambahkan.');

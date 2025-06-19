@@ -28,7 +28,6 @@
                             <th>Nama Toko</th>
                             <th>Total Pembelian</th>
                             <th>Aksi</th>
-                            <th>Urutan Customer</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,12 +50,6 @@
                             `{{ $p->gambar_hadiah ? $p->gambar_hadiah : '' }}`)">Edit
                                     </button>
                                 </td>
-                                <td>
-                                    @if ($p->total_pembelian < 50000000)
-                                        <div class="level-indicator bg-amber-200 border-amber-400 floating">
-                                            <img src="{{ asset('images/bronze-medal.png') }}" alt="Bronze Badge">
-                                        </div>
-                                        @endif
                             </tr>
                         @endforeach
                     </tbody>
