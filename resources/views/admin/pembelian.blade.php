@@ -28,6 +28,7 @@
                             <th>Nama Toko</th>
                             <th>Total Pembelian</th>
                             <th>Aksi</th>
+                            <th>Urutan Customer</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,6 +51,12 @@
                             `{{ $p->gambar_hadiah ? $p->gambar_hadiah : '' }}`)">Edit
                                     </button>
                                 </td>
+                                <td>
+                                    @if ($p->total_pembelian < 50000000)
+                                        <div class="level-indicator bg-amber-200 border-amber-400 floating">
+                                            <img src="{{ asset('images/bronze-medal.png') }}" alt="Bronze Badge">
+                                        </div>
+                                        @endif
                             </tr>
                         @endforeach
                     </tbody>
@@ -135,79 +142,81 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                        if ($.fn.DataTable.isDataTable('#customerTable')) {
-                            $('#customerTable').DataTable().clear().destroy();
-                        }
+                if ($.fn.DataTable.isDataTable('#customerTable')) {
+                    $('#customerTable').DataTable().clear().destroy();
+                }
 
-                        $('#customerTable').DataTable({
-                                paging: true,
-                                lengthChange: true,
-                                pageLength: 10,
-                                ordering: true,
-                                searching: true,
-                                info: true,
-                                lengthMenu: [
-                                    [10, 25, 50, 100, -1],
-                                    [10, 25, 50, 100, "Semua"]
-                                ],
-                                language: {
-                                    lengthMenu: "Tampilkan _MENU_ entri",
-                                    search: "Cari:",
-                                    width: "100%",
-                                    allowClear: true,
-                                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                                    paginate: {
-                                        previous: "Sebelumnya",
-                                        next: "Selanjutnya"
-                                    },
-                                    zeroRecords: "Tidak ada data ditemukan"
-                                },
-                                columnDefs: [{
-                                        targets: 1, 
-                                        type: 'num' 
-                                    }]
-                                });
+                $('#customerTable').DataTable({
+                    paging: true,
+                    lengthChange: true,
+                    pageLength: 10,
+                    ordering: true,
+                    searching: true,
+                    info: true,
+                    lengthMenu: [
+                        [10, 25, 50, 100, -1],
+                        [10, 25, 50, 100, "Semua"]
+                    ],
+                    language: {
+                        lengthMenu: "Tampilkan _MENU_ entri",
+                        search: "Cari:",
+                        width: "100%",
+                        allowClear: true,
+                        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                        paginate: {
+                            previous: "Sebelumnya",
+                            next: "Selanjutnya"
+                        },
+                        zeroRecords: "Tidak ada data ditemukan"
+                    },
+                    columnDefs: [{
+                        targets: 1,
+                        type: 'num'
+                    }]
+                });
 
-                            formatNumberInput(document.getElementById('target1')); formatNumberInput(document
-                                .getElementById('target2')); formatNumberInput(document.getElementById('totalPembelian'));
-                        });
+                formatNumberInput(document.getElementById('target1'));
+                formatNumberInput(document
+                    .getElementById('target2'));
+                formatNumberInput(document.getElementById('totalPembelian'));
+            });
 
-                    function formatNumberInput(input) {
-                        input.addEventListener('input', function() {
-                            let value = this.value.replace(/\D/g, '');
-                            this.value = new Intl.NumberFormat('id-ID').format(value);
-                        });
-                    }
+            function formatNumberInput(input) {
+                input.addEventListener('input', function() {
+                    let value = this.value.replace(/\D/g, '');
+                    this.value = new Intl.NumberFormat('id-ID').format(value);
+                });
+            }
 
-                    function openEditModal(id, nama, pembelian, target1, deskripsi_hadiah_target1, target2,
-                        deskripsi_hadiah_target2,
-                        deskripsi_hadiah, gambarUrl) {
-                        console.log('Gambar URL:', gambarUrl); 
-                        document.getElementById('editModal').classList.remove('d-none');
-                        document.getElementById('pelangganId').value = id;
-                        document.getElementById('namaToko').value = nama;
-                        document.getElementById('totalPembelian').value = new Intl.NumberFormat('id-ID').format(pembelian);
-                        document.getElementById('target1').value = target1 ? new Intl.NumberFormat('id-ID').format(target1) :
-                        '';
-                        document.getElementById('deskripsiHadiahTarget1').value = deskripsi_hadiah_target1 ?? '';
-                        document.getElementById('target2').value = target2 ? new Intl.NumberFormat('id-ID').format(target2) :
-                        '';
-                        document.getElementById('deskripsiHadiahTarget2').value = deskripsi_hadiah_target2 ?? '';
-                        document.getElementById('deskripsiHadiah').value = deskripsi_hadiah ?? '';
+            function openEditModal(id, nama, pembelian, target1, deskripsi_hadiah_target1, target2,
+                deskripsi_hadiah_target2,
+                deskripsi_hadiah, gambarUrl) {
+                console.log('Gambar URL:', gambarUrl);
+                document.getElementById('editModal').classList.remove('d-none');
+                document.getElementById('pelangganId').value = id;
+                document.getElementById('namaToko').value = nama;
+                document.getElementById('totalPembelian').value = new Intl.NumberFormat('id-ID').format(pembelian);
+                document.getElementById('target1').value = target1 ? new Intl.NumberFormat('id-ID').format(target1) :
+                    '';
+                document.getElementById('deskripsiHadiahTarget1').value = deskripsi_hadiah_target1 ?? '';
+                document.getElementById('target2').value = target2 ? new Intl.NumberFormat('id-ID').format(target2) :
+                    '';
+                document.getElementById('deskripsiHadiahTarget2').value = deskripsi_hadiah_target2 ?? '';
+                document.getElementById('deskripsiHadiah').value = deskripsi_hadiah ?? '';
 
-                        const previewDiv = document.getElementById('previewGambar');
-                        if (gambarUrl && gambarUrl !== '') {
-                            previewDiv.innerHTML = `
+                const previewDiv = document.getElementById('previewGambar');
+                if (gambarUrl && gambarUrl !== '') {
+                    previewDiv.innerHTML = `
             <p class="mt-2 text-muted">Gambar Saat Ini:</p>
             <img src="${gambarUrl}" alt="Gambar Hadiah" style="width: 100px;">
         `;
-                        } else {
-                            previewDiv.innerHTML = '';
-                        }
-                    }
+                } else {
+                    previewDiv.innerHTML = '';
+                }
+            }
 
-                    function closeModal() {
-                        document.getElementById('editModal').classList.add('d-none');
-                    }
+            function closeModal() {
+                document.getElementById('editModal').classList.add('d-none');
+            }
         </script>
     @endsection

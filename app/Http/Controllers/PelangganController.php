@@ -28,8 +28,7 @@ class PelangganController extends Controller
     {
         $pelanggans = Pelanggan::with('user')->get();
         $userId = Auth::user()->id;
-        $rewardImage = Pelanggan::whereNotNull('reward_image')->value('reward_image');
-
+        $rewardImage = Pelanggan::whereNotNull('gambar_hadiah')->value('reward_image');
         $sortedPelanggans = $pelanggans->sortByDesc('total_pembelian')->values(); 
 
         $userRank = null;

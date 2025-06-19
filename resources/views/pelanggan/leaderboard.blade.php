@@ -59,17 +59,17 @@
                             @endif
 
                             <!-- Top 3 -->
+                            <!-- Top 3 -->
                             @if (isset($top3[2]))
                                 <div
-                                    class="bg-gradient-to-r from-amber-200 to-amber-100 rounded-lg p-4 text-center shadow-md flex-1 transform hover:scale-105 transition-transform duration-300 hover:shadow-lg">
+                                    class="bg-gradient-to-r from-amber-700 to-amber-600 rounded-lg p-4 text-center shadow-md flex-1 transform hover:scale-105 transition-transform duration-300 hover:shadow-lg">
                                     <div class="text-2xl mb-2 animate-wiggle">🥉</div>
-                                    <div class="font-bold">
+                                    <div class="font-bold text-white">
                                         {{ $top3[2]->user_id == $userId ? $top3[2]->nama_toko : substr($top3[2]->nama_toko, 0, 3) . '***' }}
                                     </div>
-                                    <div class="text-md font-semibold mt-2">
+                                    <div class="text-md font-semibold mt-2 text-white">
                                         @if ($top3[2]->user_id == $userId)
-                                            <span
-                                                class="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600">
+                                            <span class="text-white">
                                                 Rp{{ number_format($top3[2]->total_pembelian, 0, ',', '.') }}
                                             </span>
                                         @else
@@ -86,7 +86,8 @@
                             <h3
                                 class="text-md font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
                                 🎁 Reward untuk Juara 1</h3>
-                            <img src="{{ $rewardImage->reward_image }}"
+                                <h1>test</h1>
+                            <img src="{{ $rewardImage->gambar_hadiah }}"
                                 class="w-48 mx-auto rounded-lg shadow-lg border-2 border-yellow-400 transform hover:scale-110 transition-transform duration-300 hover:shadow-xl hover:border-yellow-500"
                                 alt="Reward Image">
                         </div>
@@ -208,7 +209,7 @@
 
         const generalChartData = @json($generalChartData);
         const generalCtx = document.getElementById('generalLeaderboardChart').getContext('2d');
-        const userId = {{ $userId }}; 
+        const userId = {{ $userId }};
 
         let userIndex = -1;
         generalChartData.forEach((data, index) => {
@@ -365,7 +366,7 @@
                             display: false
                         },
                         ticks: {
-                            mirror: false, 
+                            mirror: false,
                             padding: 10,
                             font: function(context) {
                                 if (generalChartData[context.index]?.user_id === userId) {
@@ -390,7 +391,7 @@
                 },
                 layout: {
                     padding: {
-                        left: 0, 
+                        left: 0,
                         right: 10,
                         top: 20,
                         bottom: 20

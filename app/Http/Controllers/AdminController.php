@@ -257,7 +257,7 @@ class AdminController extends Controller
 
         try {
             $uploadedFile = $cloudinary->uploadApi()->upload(
-                $request->file('reward_image')->getRealPath(),
+                $request->file('gambar_hadiah')->getRealPath(),
                 [
                     'folder' => $path,
                     'public_id' => $publicId,
@@ -269,7 +269,7 @@ class AdminController extends Controller
         }
 
         Pelanggan::where('id', 1)->update([
-            'reward_image' => $uploadedFile['secure_url']
+            'gambar_hadiah' => $uploadedFile['secure_url']
         ]);
 
         return redirect()->back()->with('success', 'Gambar reward berhasil diperbarui.');
